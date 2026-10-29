@@ -1,0 +1,27 @@
+model WaterReminderSettings {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique @map("user_id")
+  enabled         Boolean   @default(false)
+  timezone        String    @default("Europe/Kyiv")
+  startMinute     Int       @default(540) @map("start_minute")
+  endMinute       Int       @default(1260) @map("end_minute")
+  intervalMinutes Int       @default(120) @map("interval_minutes")
+  days            Int[]     @default([0, 1, 2, 3, 4, 5, 6])
+  nextReminderAt  DateTime? @map("next_reminder_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([enabled, nextReminderAt])
+  @@map("water_reminder_settings")
+}
+
+model PushToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@map("push_tokens")
+}

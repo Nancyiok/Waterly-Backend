@@ -1,0 +1,34 @@
+enum UserRole {
+  admin
+  user
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  role       UserRole @default(user)
+  isVerified Boolean  @default(false) @map("is_verified")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  profile     UserProfile?
+  credentials UserCredentials?
+  waterIntake WaterIntake[]
+  waterStats WaterStats?
+  waterReminder WaterReminderSettings?
+  pushTokens PushToken[]
+  @@map("users")
+}
+
+model UserCredentials {
+  id                         Int       @id @default(autoincrement())
+  userId                     Int       @unique @map("user_id")
+  googleId                   String?   @unique
+  passwordHash               String?    @map("password_hash")
+  verificationToken          String?   @unique @map("verification_token")
+  verificationTokenExpiresAt DateTime? @map("verification_token_expires_at")
+  resetToken                 String?   @unique @map("reset_token")
+  resetTokenExpiresAt        DateTime? @map("reset_token_expires_at")
+  refreshTokenHash           String?   @map("refresh_token_hash")
+  user                       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("user_credentials")
+}

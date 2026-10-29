@@ -1,0 +1,27 @@
+enum Climate {
+    cool
+    moderate
+    warm
+    extreme
+}
+
+enum ActivityLevel {
+    sedentary
+    moderate
+    heavy
+    athletic
+}
+
+model WaterStats {
+    id            Int      @id @default(autoincrement())
+    userId        Int      @unique
+    waterGoal     Int      @default(2000)
+    streakGoal    Int      @default(0)
+    climate       Climate?
+    activity      ActivityLevel?
+    heavySweating Boolean  @default(false)
+    caffeine      Boolean  @default(false)
+    recovery      Boolean  @default(false)
+    updatedAt     DateTime @updatedAt
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

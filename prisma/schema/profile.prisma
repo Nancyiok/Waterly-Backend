@@ -1,0 +1,20 @@
+enum Gender {
+  male
+  female
+  other
+  unspecified
+}
+
+model UserProfile {
+  id          Int       @id @default(autoincrement())
+  name        String    @default("John")
+  surname     String    @default("Doe")
+  gender      Gender?   @default(unspecified)
+  weight      Float?
+  avatarLink  String?   @map("avatar_link")
+  dateOfBirth DateTime? @db.Date @map("date_of_birth")
+  phone       String?
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int       @unique
+  @@map("profiles")
+}

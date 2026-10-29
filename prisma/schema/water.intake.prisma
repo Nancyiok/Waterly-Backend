@@ -1,0 +1,11 @@
+model WaterIntake {
+    id     Int      @id @default(autoincrement())
+    userId Int      @map("user_id")
+    date   DateTime @default(now())
+    day    DateTime @db.Date
+    ml     Int      @map("amount_ml")
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    @@index([userId, date])
+    @@index([userId, day])
+    @@map("water_intake")
+}
