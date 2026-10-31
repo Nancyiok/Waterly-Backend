@@ -42,8 +42,15 @@ export class PrismaService
       }
     });
 
-    await this.$connect();
-    this.logger.log(PRISMA_LOG.CONNECTED);
+    try {
+      await this.$connect();
+      await this.$queryRaw`SELECT 1`;
+      this.logger.log(PRISMA_LOG.CONNECTED);
+    } catch (error) {
+      this.logger.error(
+        PRISMA_LOG.CONNECTION_FAILED
+      );
+    }
   }
 
   async onModuleDestroy() {
