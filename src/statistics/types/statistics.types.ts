@@ -1,6 +1,6 @@
 export type Interval = { from: Date; to: Date };
 
-export type DailyTotal = { day: Date; _sum: { ml: number | null } };
+export type DailyTotal = { date: string; ml: number };
 
 export type LinePoint = { date: string; ml: number };
 

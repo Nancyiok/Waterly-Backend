@@ -17,30 +17,28 @@ export class StatisticsService {
 
   async find(userId: number, { period }: GetStatisticsDto) {
     const interval = getPeriodInterval(period, startOfDay(new Date()));
-    const dailyTotals = await this.waterTotals.getDailyTotals(userId, interval);
-
-    const summary = this.summaryService.getSummary(
-      userId,
-      interval,
-      dailyTotals.length,
-    );
+    const days = await this.waterTotals.getDailyTotals(userId, interval);
+    const summary = this.summaryService.getSummary(interval, days);
 
     if (period === STATISTICS_PERIOD.YEAR) {
-      const [summaryResult, charts] = await Promise.all([
-        summary,
-        this.chartsService.getYearCharts(userId, interval),
-      ]);
-      return { summary: summaryResult, ...charts, goalCompletion: null };
+      const charts = this.chartsService.getYearCharts(interval, days);
+      return { summary, ...charts, goalCompletion: null };
     }
 
-    const [summaryResult, goalCompletion, charts] = await Promise.all([
-      summary,
-      this.summaryService.getGoalCompletion(userId, interval),
+    const waterGoal = await this.waterTotals.getWaterGoal(userId);
+    const charts =
       period === STATISTICS_PERIOD.MONTH
-        ? this.chartsService.getMonthCharts(userId, interval, dailyTotals)
-        : this.chartsService.getWeekCharts(interval, dailyTotals),
-    ]);
+        ? this.chartsService.getMonthCharts(interval, days)
+        : this.chartsService.getWeekCharts(interval, days);
 
-    return { summary: summaryResult, ...charts, goalCompletion };
+    return {
+      summary,
+      ...charts,
+      goalCompletion: this.summaryService.getGoalCompletion(
+        interval,
+        days,
+        waterGoal,
+      ),
+    };
   }
 }

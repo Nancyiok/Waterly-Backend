@@ -1,5 +1,4 @@
 import { eachDayOfInterval, format } from 'date-fns';
-import { fromDbDay } from '../../common/utils/db-day.util';
 import { DATE_FORMAT } from '../../common/constants/date.constant';
 import {
   type Bar,
@@ -14,9 +13,7 @@ export const toDailyLine = (
   { from, to }: Interval,
   dailyTotals: DailyTotal[],
 ): LinePoint[] => {
-  const mlByDate = new Map(
-    dailyTotals.map((total) => [fromDbDay(total.day), total._sum.ml ?? 0]),
-  );
+  const mlByDate = new Map(dailyTotals.map(({ date, ml }) => [date, ml]));
 
   return eachDayOfInterval({ start: from, end: to }).map((day) => {
     const date = toDay(day);
