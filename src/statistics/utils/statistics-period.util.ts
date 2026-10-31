@@ -1,7 +1,9 @@
 import {
   addDays,
-  addMonths,
   differenceInCalendarDays,
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  endOfMonth,
   min,
   startOfMonth,
   subDays,
@@ -33,28 +35,17 @@ export const getPeriodInterval = (
 export const countDays = ({ from, to }: Interval) =>
   differenceInCalendarDays(to, from) + 1;
 
-export const splitIntoWeeks = ({ from, to }: Interval): Interval[] => {
-  const weeks: Interval[] = [];
-  for (
-    let start = from;
-    start <= to;
-    start = addDays(start, STATISTICS.WEEK_DAYS)
-  ) {
-    weeks.push({
-      from: start,
-      to: min([addDays(start, STATISTICS.WEEK_DAYS - 1), to]),
-    });
-  }
-  return weeks;
-};
+export const splitIntoWeeks = ({ from, to }: Interval): Interval[] =>
+  eachDayOfInterval(
+    { start: from, end: to },
+    { step: STATISTICS.WEEK_DAYS },
+  ).map((start) => ({
+    from: start,
+    to: min([addDays(start, STATISTICS.WEEK_DAYS - 1), to]),
+  }));
 
-export const splitIntoMonths = ({ from, to }: Interval): Interval[] => {
-  const months: Interval[] = [];
-  for (let start = from; start <= to; start = addMonths(start, 1)) {
-    months.push({
-      from: start,
-      to: min([subDays(addMonths(start, 1), 1), to]),
-    });
-  }
-  return months;
-};
+export const splitIntoMonths = ({ from, to }: Interval): Interval[] =>
+  eachMonthOfInterval({ start: from, end: to }).map((start) => ({
+    from: start,
+    to: min([endOfMonth(start), to]),
+  }));
